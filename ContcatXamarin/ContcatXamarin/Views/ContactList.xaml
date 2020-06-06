@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<base:BasePage
+    xmlns:base="clr-namespace:ContcatXamarin.Views.Base"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Class="ContcatXamarin.Views.ContactList"
+    xmlns:helpers="clr-namespace:ContcatXamarin.Helpers"
+    xmlns:forms="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
+    xmlns:transformations="clr-namespace:FFImageLoading.Transformations;assembly=FFImageLoading.Transformations"
+    xmlns:converters="clr-namespace:ContcatXamarin.Converters" 
+    xmlns:controls="clr-namespace:ContcatXamarin.Controls"
+    Title="Contact List"
+    x:Name="contactListPage">
+    
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:StringToImageConverter x:Key="StringToImageConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem 
+                     Command="{Binding NavigateToPageCommand}" >
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="{StaticResource MaterialFontFamily}"
+                                 Glyph="{x:Static helpers:MaterialFontCodes.Plus}"/>
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+    </ContentPage.ToolbarItems>
+
+    <!--<Shell.SearchHandler>
+        <controls:UsersSearchHandler ItemSource="{Binding Users}"
+                                     Placeholder="Enter search term"
+                                     ShowsResults="true"
+                                     DisplayMemberName="Name"/>
+    </Shell.SearchHandler>-->
+
+    <StackLayout>
+
+        <SearchBar x:Name="SearchBar" 
+                   Placeholder="Search contact"
+                   SearchCommand="{Binding SearchCommand}" 
+                   SearchCommandParameter="{Binding Text, Source={x:Reference SearchBar}}">
+            <SearchBar.Behaviors>
+                <helpers:TextChangedBehavior />
+            </SearchBar.Behaviors>
+        </SearchBar>
+
+        <RefreshView IsRefreshing="{Binding IsRefreshing}"
+                     Command="{Binding RefreshCommand}">
+
+            <CollectionView 
+                        ItemsSource="{Binding Users}" 
+                        BackgroundColor="White"
+                        ItemsLayout="VerticalList"
+                        VerticalScrollBarVisibility="Always"
+                        EmptyView="No users to display"
+                        SelectionMode="Multiple"
+                        SelectionChangedCommand="{Binding SelectCommand, Mode=TwoWay}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout Padding="10,5">
+                            <Frame HasShadow="True" 
+                                   BorderColor="LightBlue" 
+                                   CornerRadius="10"
+                                   BackgroundColor="AliceBlue">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="3*"/>
+                                        <ColumnDefinition Width="7*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <forms:CachedImage Grid.Column="0"
+                                                           Source="{Binding ImageUrl, 
+                                                                    Converter={StaticResource StringToImageConverter}, 
+                                                                    ConverterParameter={x:Static helpers:Constants.ErrorPlaceholder}}"
+                                                           LoadingPlaceholder="contact.png"
+                                                           WidthRequest="50"
+                                                           HeightRequest="50">
+                                        <forms:CachedImage.Transformations>
+                                            <transformations:RoundedTransformation Radius="250"/>
+                                        </forms:CachedImage.Transformations>
+                                    </forms:CachedImage>
+
+                                    <Label
+                                            Grid.Column="1"
+                                            Text="{Binding FullName}"
+                                            FontSize="Medium"
+                                            VerticalOptions="Center"
+                                            HorizontalOptions="Start"
+                                            LineBreakMode="WordWrap"/>
+
+                                    <Label 
+                                            Grid.Column="2"
+                                            FontFamily="{StaticResource MaterialFontFamily}"
+                                            Text="{x:Static helpers:MaterialFontCodes.Update}"
+                                            TextColor="DeepSkyBlue"
+                                            FontSize="40">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer 
+                                                    Command="{Binding Path=BindingContext.NavigateToPageCommand, 
+                                                                        Source={x:Reference Name=contactListPage}}"
+                                                    CommandParameter="{Binding Id}"/>
+                                        </Label.GestureRecognizers>
+                                    </Label>
+
+                                    <Label
+                                            Grid.Column="3"
+                                            FontFamily="{StaticResource MaterialFontFamily}"
+                                            Text="{x:Static helpers:MaterialFontCodes.Delete}"
+                                            TextColor="PaleVioletRed"
+                                            FontSize="40">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer         
+                                                            Command= "{Binding Path=BindingContext.DeleteCommand, 
+                                                                               Source={x:Reference Name=contactListPage}}"
+                                                    CommandParameter="{Binding Id}"/>
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                </Grid>
+                            </Frame>
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </StackLayout>
+</base:BasePage>
